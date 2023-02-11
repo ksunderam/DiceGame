@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 public class DieTester
 {
+    //here are all the static variables that I use in the Viewer
     private static DieTesterViewer x;
     public static int i;
     public static int totalRoll;
@@ -9,18 +10,31 @@ public class DieTester
     public static int roll2;
     public static boolean over50;
     public static int rounds;
+    public static int turns;
+    public static boolean gameStart;
+    private Die[] dices;
+    private final int NUM_DIE = 100;
 
     public DieTester()
     {
-        x = new DieTesterViewer(this);
+        //makes all the tiny die displayed on the screen while one is playing the game
+        dices = new Die[NUM_DIE];
+        for (int i = 0; i < NUM_DIE; i++)
+        {
+            dices[i] = new Die(x);
+        }
         i = 0;
         roll1 = 0;
         roll2 = 0;
         over50 = false;
         rounds = 0;
+        gameStart = false;
+        //instance of the front-end
+        x = new DieTesterViewer(this);
     }
 
-    public static void printGreeting() {
+    public static void printGreeting()
+    {
         //instructions for game
         System.out.println("Welcome to the Maze...");
         System.out.println("To play this game, you will roll two die:");
@@ -42,12 +56,16 @@ public class DieTester
         while (i < 50 || i > 50)
         {
             totalRoll = 0;
+            //repaints are used to update the window
             x.repaint();
             //roll2 = 0;
             //loops the maze back around to position 0 if one goes over 50
             if (i > 50)
             {
+                //this boolean is there to tell my front end whether to show the
+                //sad face image if we've gone over the 50 target
                 over50 = true;
+                // a round is every time you get reset back to 0
                 rounds++;
                 i = 0;
                 System.out.println("Oh no, you've jumped over the 50 target! "
@@ -63,8 +81,8 @@ public class DieTester
                 num = input.nextInt();
             }
             while (num < 5 || num > 7);
+            //since we're doing another move we cannot be over the target of 50
             over50 = false;
-
             //rolling die with user chosen # of sides
             //1 method
             //x.repaint();
@@ -74,9 +92,9 @@ public class DieTester
             //2 method
             roll2 = d2.roll();
             System.out.println(roll2);
+            gameStart = true;
             roll1 = 0;
             x.repaint();
-
             System.out.println("\nFor your second roll, you can choose to take "
                     + "the maximum value of 3 rolls on a six-sided die, or the "
                     + "minimum value.");
@@ -91,10 +109,8 @@ public class DieTester
                 maxminVal = input.nextInt();
             }
             while (maxminVal < 0 || maxminVal > 1);
-
             //declares new 6 sided die
             Die d1 = new Die();
-
             //checks whether user wants max or min, proceeds to calculate rolls
             roll1 = 0;
             if (maxminVal == 1)
@@ -105,7 +121,6 @@ public class DieTester
                 roll1 = d1.getMaxRoll(3);
                 System.out.println("\nMax of 3 rolls on the 6-sided die:\n"
                         + roll1);
-
             }
             else if (maxminVal == 0)
             {
@@ -121,12 +136,12 @@ public class DieTester
             totalRoll = roll1 + roll2;
             System.out.println("\nThe total value of your rolls are "
                     + totalRoll + ".");
-
             //calculates position on the board
             i = totalRoll + i;
             System.out.println("You are now at position "
                     + i + " on the board.\n");
-
+            //a turn is when you've rolled both die
+            turns++;
             x.repaint();
         }
     }
@@ -138,8 +153,12 @@ public class DieTester
         System.out.println("\nYAY! You're out of the maze! You've reached the magic door at position 50!\nCongratulations!");
     }
 
-    public static void main(String[] args) {
-        //printGreeting();
+    public Die[] getDices() {
+        return dices;
+    }
+
+    public static void main(String[] args)
+    {
         playGame();
     }
 }
